@@ -14,7 +14,8 @@ lazy val root = (project in file(".")).
       scalaVersion    := "2.13.8"
     )),
     name := "lunatech-imdb-assessment",
-    libraryDependencies ++= Seq(
+
+    libraryDependencies ++=  Seq(
       "com.typesafe.akka" %% "akka-http"                % akkaHttpVersion,
       "com.typesafe.akka" %% "akka-http-spray-json"     % akkaHttpVersion,
       "com.typesafe.akka" %% "akka-actor-typed"         % akkaVersion,
@@ -24,5 +25,11 @@ lazy val root = (project in file(".")).
       "com.typesafe.akka" %% "akka-http-testkit"        % akkaHttpVersion % Test,
       "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion     % Test,
       "org.scalatest"     %% "scalatest"                % "3.1.4"         % Test
+    ) ++ Seq(
+      "com.typesafe.slick" %% "slick" % "3.3.3",
+      "org.postgresql" % "postgresql" % "42.3.4",
+      "com.typesafe.slick" %% "slick-hikaricp" % "3.3.3",
+      "com.github.tminglei" %% "slick-pg" % "0.20.3",
+      "com.github.tminglei" %% "slick-pg_play-json" % "0.20.3"
     )
   )

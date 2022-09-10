@@ -10,6 +10,11 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
+import lunatech.actors.ImdbRegistry
+import lunatech.actors.ImdbRegistry._
+import lunatech.routes.ImdbRoutes
+
+
 //#set-up
 class UserRoutesSpec extends AnyWordSpec with Matchers with ScalaFutures with ScalatestRouteTest {
   //#test-top
@@ -26,11 +31,11 @@ class UserRoutesSpec extends AnyWordSpec with Matchers with ScalaFutures with Sc
   // but we could "mock" it by implementing it in-place or by using a TestProbe
   // created with testKit.createTestProbe()
   val userRegistry = testKit.spawn(ImdbRegistry())
-  lazy val routes = new ImdbRoutes(userRegistry).userRoutes
+  lazy val routes = new ImdbRoutes(userRegistry).imdbRoutes
 
   // use the json formats to marshal and unmarshall objects in the test
   import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
-  import JsonFormats._
+  import lunatech.serializer.JsonFormats._
   //#set-up
 
   //#actual-test
@@ -53,7 +58,7 @@ class UserRoutesSpec extends AnyWordSpec with Matchers with ScalaFutures with Sc
 
     //#testing-post
     "be able to add users (POST /users)" in {
-      val user = Title("Kapi", 42, "jp")
+      val user = Title("Kapi", "42", "jp")
       val userEntity = Marshal(user).to[MessageEntity].futureValue // futureValue is from ScalaFutures
 
       // using the RequestBuilding DSL:

@@ -8,6 +8,9 @@ import akka.http.scaladsl.server.Route
 import scala.util.Failure
 import scala.util.Success
 
+import lunatech.actors.ImdbRegistry
+import lunatech.routes.ImdbRoutes
+
 //#main-class
 object Main {
   //#start-http-server

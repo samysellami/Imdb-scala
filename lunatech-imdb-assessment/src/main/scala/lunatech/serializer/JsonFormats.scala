@@ -1,9 +1,10 @@
-package lunatech
-
-import lunatech.ImdbRegistry.ActionPerformed
+package lunatech.serializer
 
 //#json-formats
 import spray.json.DefaultJsonProtocol
+
+import lunatech.actors.ImdbRegistry.ActionPerformed
+import lunatech.actors.ImdbRegistry._
 
 object JsonFormats  {
   // import the default encoders for primitive types (Int, String, Lists etc)
