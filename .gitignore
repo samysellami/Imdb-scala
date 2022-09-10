@@ -1,7 +1,9 @@
 *.tsv
 *.gz
-.metals
+.metals/
 .vscode
 *.minimal
 .DS_Store
 .ammonite/
+.bloop/
+metals.sbt

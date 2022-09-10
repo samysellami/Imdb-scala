@@ -29,5 +29,5 @@ services:
       - POSTGRES_USER=postgres
       - PGPASSWORD=postgres
       - POSTGRES_DB=lunatech_imdb
-      - MINIMAL_DATASET=true
+      - MINIMAL_DATASET=false
       - FORCE_IMPORT=false
