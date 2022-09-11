@@ -13,7 +13,7 @@ import akka.util.Timeout
 
 import lunatech.actors.ImdbRegistry
 import lunatech.actors.ImdbRegistry._
-import lunatech.models.{Title, Titles}
+import lunatech.models.{Title, Titles, Error}
 
 //#import-json-formats
 //#title-routes-class
@@ -27,14 +27,12 @@ class ImdbRoutes(imdbRegistry: ActorRef[ImdbRegistry.Command])(implicit val syst
   // If ask takes more time than this to complete the request is failed
   private implicit val timeout = Timeout.create(system.settings.config.getDuration("my-app.routes.ask-timeout"))
 
-  def getTitles(): Future[Titles] =
+  def getTitles(): Future[Either[Error, Titles]] =
     imdbRegistry.ask(GetTitles)
   def getTitle(name: String): Future[GetTitleResponse] =
     imdbRegistry.ask(GetTitle(name, _))
   def createTitle(title: Title): Future[ActionPerformed] =
     imdbRegistry.ask(CreateTitle(title, _))
-  def deleteTitle(name: String): Future[ActionPerformed] =
-    imdbRegistry.ask(DeleteTitle(name, _))
 
   //#all-routes
   //#titles-get-post
@@ -68,13 +66,6 @@ class ImdbRoutes(imdbRegistry: ActorRef[ImdbRegistry.Command])(implicit val syst
                 }
               }
               //#retrieve-title-info
-            },
-            delete {
-              //#titles-delete-logic
-              onSuccess(deleteTitle(name)) { performed =>
-                complete((StatusCodes.OK, performed))
-              }
-              //#titles-delete-logic
             })
         })
       //#titles-get-delete

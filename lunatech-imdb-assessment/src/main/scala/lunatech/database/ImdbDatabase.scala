@@ -9,5 +9,4 @@ object  ImdbDatabase {
         Database.forConfig("postgres")
     }
     
-}
- 
+} 

@@ -5,7 +5,6 @@ import slick.jdbc.PostgresProfile.api._
 import lunatech.database.DatabaseCommands
 import lunatech.models.Title
 import slick.jdbc.GetResult
-import slick.sql.SqlStreamingAction
 
 class QueryDatabase {
   
@@ -16,6 +15,6 @@ class QueryDatabase {
             GetResult(r => Title(r.<<, r.<<, r.<<)) 
         
         val sqlQuery = sql"SELECT titleType, primaryTitle, genres FROM public.title_basics where primaryTitle='Pauvre Pierrot';".as[Title]
-        databaseCommands.run[Vector[Title]](sqlQuery)
+        databaseCommands.run[Vector[Title]](sqlQuery)        
     }
 }

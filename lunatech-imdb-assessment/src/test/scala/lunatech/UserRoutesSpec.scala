@@ -13,6 +13,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import lunatech.actors.ImdbRegistry
 import lunatech.actors.ImdbRegistry._
 import lunatech.routes.ImdbRoutes
+import lunatech.models.Title
 
 
 //#set-up
