@@ -13,7 +13,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import lunatech.actors.ImdbRegistry
 import lunatech.actors.ImdbRegistry._
 import lunatech.routes.ImdbRoutes
-import lunatech.models.Title
+import lunatech.models.InfoTitle
 
 
 //#set-up
@@ -59,7 +59,7 @@ class UserRoutesSpec extends AnyWordSpec with Matchers with ScalaFutures with Sc
 
     //#testing-post
     "be able to add users (POST /users)" in {
-      val user = Title("Kapi", "42", "jp")
+      val user = InfoTitle("Kapi", "42", "jp")
       val userEntity = Marshal(user).to[MessageEntity].futureValue // futureValue is from ScalaFutures
 
       // using the RequestBuilding DSL:

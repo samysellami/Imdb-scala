@@ -13,7 +13,7 @@ import akka.util.Timeout
 
 import lunatech.actors.ImdbRegistry
 import lunatech.actors.ImdbRegistry._
-import lunatech.models.{Title, Titles, ErrorDescription}
+import lunatech.models.{InfoTitle, InfosTitle, ErrorDescription}
 
 //#import-json-formats
 //#title-routes-class
@@ -27,36 +27,38 @@ class ImdbRoutes(imdbRegistry: ActorRef[ImdbRegistry.Command])(implicit val syst
   // If ask takes more time than this to complete the request is failed
   private implicit val timeout = Timeout.create(system.settings.config.getDuration("my-app.routes.ask-timeout"))
 
-  def getTitles(): Future[Either[ErrorDescription, Titles]] =
-    imdbRegistry.ask(GetTitles)
-  def getTitle(name: String): Future[GetTitleResponse] =
-    imdbRegistry.ask(GetTitle(name, _))
+  def getInfo(primaryTitle: String): Future[Either[ErrorDescription, InfosTitle]] =
+    imdbRegistry.ask(GetInfo(primaryTitle, _))
+  def getMovies(genre: String): Future[Either[ErrorDescription, InfosTitle]] =
+    imdbRegistry.ask(GetMovies(genre, _))
 
   //#all-routes
   //#titles-get title-get
   val imdbRoutes: Route =
-    pathPrefix("titles") {
+    pathPrefix("title") {
       concat(
         //#titles-get
-        pathEnd {
-          concat(
-            get {
-              complete(getTitles())
-            })
+        path(Segment) { primaryTitle =>
+          get {
+            rejectEmptyResponse {
+              complete(getInfo(primaryTitle))
+            }
+          }
         },
         //#titles-get
-        path(Segment) { name =>
-          concat(
-            get {
-              //#retrieve-title-info
-              rejectEmptyResponse {
-                onSuccess(getTitle(name)) { response =>
-                  complete(response.maybeTitle)
+        pathPrefix("toprated"){
+          path(Segment) { genre =>
+            concat(
+              get {
+                //#retrieve-title-info
+                rejectEmptyResponse {
+                    complete(getMovies(genre))
                 }
               }
-              //#retrieve-title-info
-            })
-        })
+            )
+          }
+        }
+      )
     }
   //#all-routes
 }
