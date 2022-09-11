@@ -13,7 +13,7 @@ import akka.util.Timeout
 
 import lunatech.actors.ImdbRegistry
 import lunatech.actors.ImdbRegistry._
-import lunatech.models.{Title, Titles, Error}
+import lunatech.models.{Title, Titles, ErrorDescription}
 
 //#import-json-formats
 //#title-routes-class
@@ -27,7 +27,7 @@ class ImdbRoutes(imdbRegistry: ActorRef[ImdbRegistry.Command])(implicit val syst
   // If ask takes more time than this to complete the request is failed
   private implicit val timeout = Timeout.create(system.settings.config.getDuration("my-app.routes.ask-timeout"))
 
-  def getTitles(): Future[Either[Error, Titles]] =
+  def getTitles(): Future[Either[ErrorDescription, Titles]] =
     imdbRegistry.ask(GetTitles)
   def getTitle(name: String): Future[GetTitleResponse] =
     imdbRegistry.ask(GetTitle(name, _))

@@ -5,7 +5,7 @@ import spray.json.DefaultJsonProtocol
 
 import lunatech.actors.ImdbRegistry.ActionPerformed
 import lunatech.actors.ImdbRegistry._
-import lunatech.models.{Title, Titles, Error}
+import lunatech.models.{Title, Titles, ErrorDescription}
 
 
 object JsonFormats  {
@@ -14,7 +14,7 @@ object JsonFormats  {
 
   implicit val titleJsonFormat = jsonFormat3(Title)
   implicit val titlesJsonFormat = jsonFormat1(Titles)
-  implicit val errorJsonFormat = jsonFormat1(Error)
+  implicit val errorJsonFormat = jsonFormat1(ErrorDescription)
 
   implicit val actionPerformedJsonFormat = jsonFormat1(ActionPerformed)
 }

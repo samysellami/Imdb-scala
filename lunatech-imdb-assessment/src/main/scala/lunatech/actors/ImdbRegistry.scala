@@ -6,7 +6,7 @@ import akka.actor.typed.Behavior
 import akka.actor.typed.scaladsl.Behaviors
 import scala.collection.immutable
 
-import lunatech.models.{Title, Titles, Error}
+import lunatech.models.{Title, Titles, ErrorDescription}
 import lunatech.database.QueryDatabase
 import scala.util.Success
 import scala.util.Failure
@@ -17,7 +17,7 @@ import scala.concurrent.ExecutionContext
 object  ImdbRegistry {
 
   sealed trait Command
-  final case class GetTitles(replyTo: ActorRef[Either[Error, Titles]]) extends Command
+  final case class GetTitles(replyTo: ActorRef[Either[ErrorDescription, Titles]]) extends Command
   final case class CreateTitle(title: Title, replyTo: ActorRef[ActionPerformed]) extends Command
   final case class GetTitle(name: String, replyTo: ActorRef[GetTitleResponse]) extends Command
 
@@ -33,22 +33,26 @@ object  ImdbRegistry {
     }
   }
 
+  def performQuery(replyTo: ActorRef[Either[ErrorDescription, Titles]])(implicit executionContext: ExecutionContext) = {
+    val titlesQuery = queryDatabase.getTitle()
+    
+    titlesQuery.onComplete  {
+      case Success(title) => {
+        println(title)
+        replyTo ! Right(Titles(title.toSeq))
+      } 
+      case Failure(exception) => {
+        println(s"nik mok, an exception occured ${exception}") 
+        replyTo ! Left(ErrorDescription(s"an error occured ${exception}"))
+      }
+    }        
+  }
+
   private def registry(titles: Set[Title])(implicit executionContext: ExecutionContext): Behavior[Command] =
 
     Behaviors.receiveMessage {
       case GetTitles(replyTo) =>
-        val titlesQuery = queryDatabase.getTitle()
-        
-        titlesQuery.onComplete  {
-          case Success(title) => {
-            println(title)
-            replyTo ! Right(Titles(title.toSeq))
-          } 
-          case Failure(exception) => {
-            println(s"nik mok, an exception occured ${exception}") 
-            replyTo ! Left(Error(s"an error occured ${exception}"))
-          }
-        }        
+        performQuery(replyTo)
         Behaviors.same
       
       case CreateTitle(title, replyTo) =>
