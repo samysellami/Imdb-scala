@@ -6,7 +6,7 @@ import akka.actor.typed.Behavior
 import akka.actor.typed.scaladsl.Behaviors
 import scala.collection.immutable
 
-import lunatech.models.{InfoTitle, InfosTitle, ErrorDescription}
+import lunatech.models.{InfoTitle, Infos, ErrorDescription}
 import lunatech.database.QueryDatabase
 import scala.util.Success
 import scala.util.Failure
@@ -17,8 +17,8 @@ import scala.concurrent.ExecutionContext
 object  ImdbRegistry {
 
   sealed trait Command
-  final case class GetInfo(primaryTitle: String, replyTo: ActorRef[Either[ErrorDescription, InfosTitle]]) extends Command
-  final case class GetMovies(genre: String, replyTo: ActorRef[Either[ErrorDescription, InfosTitle]]) extends Command
+  final case class GetInfo(primaryTitle: String, replyTo: ActorRef[Either[ErrorDescription, Infos]]) extends Command
+  final case class GetMovies(genre: String, replyTo: ActorRef[Either[ErrorDescription, Infos]]) extends Command
 
   val queryDatabase = new QueryDatabase
   
@@ -29,12 +29,12 @@ object  ImdbRegistry {
     }
   }
 
-  def performQuery(primaryTitle: String, replyTo: ActorRef[Either[ErrorDescription, InfosTitle]])(implicit executionContext: ExecutionContext) = {
+  def performQuery(primaryTitle: String, replyTo: ActorRef[Either[ErrorDescription, Infos]])(implicit executionContext: ExecutionContext) = {
     val queryResult = queryDatabase.getInfo(primaryTitle)
     queryResult.onComplete  {
       case Success(infos) => {
         println(infos)
-        replyTo ! Right(InfosTitle(infos.toSeq))
+        replyTo ! Right(Infos(infos.toSeq))
       } 
       case Failure(exception) => {
         println(s"nik mok, an exception occured ${exception}") 
