@@ -3,7 +3,6 @@ package lunatech.serializer
 //#json-formats
 import spray.json.DefaultJsonProtocol
 
-import lunatech.actors.ImdbRegistry.ActionPerformed
 import lunatech.actors.ImdbRegistry._
 import lunatech.models.{Title, Titles, ErrorDescription}
 
@@ -16,6 +15,5 @@ object JsonFormats  {
   implicit val titlesJsonFormat = jsonFormat1(Titles)
   implicit val errorJsonFormat = jsonFormat1(ErrorDescription)
 
-  implicit val actionPerformedJsonFormat = jsonFormat1(ActionPerformed)
 }
 //#json-formats

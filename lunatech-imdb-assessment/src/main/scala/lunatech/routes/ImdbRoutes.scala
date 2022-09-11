@@ -31,31 +31,20 @@ class ImdbRoutes(imdbRegistry: ActorRef[ImdbRegistry.Command])(implicit val syst
     imdbRegistry.ask(GetTitles)
   def getTitle(name: String): Future[GetTitleResponse] =
     imdbRegistry.ask(GetTitle(name, _))
-  def createTitle(title: Title): Future[ActionPerformed] =
-    imdbRegistry.ask(CreateTitle(title, _))
 
   //#all-routes
-  //#titles-get-post
-  //#titles-get-delete
+  //#titles-get title-get
   val imdbRoutes: Route =
     pathPrefix("titles") {
       concat(
-        //#titles-get-delete
+        //#titles-get
         pathEnd {
           concat(
             get {
               complete(getTitles())
-            },
-            post {
-              entity(as[Title]) { title =>
-                onSuccess(createTitle(title)) { performed =>
-                  complete((StatusCodes.Created, performed))
-                }
-              }
             })
         },
-        //#titles-get-delete
-        //#titles-get-post
+        //#titles-get
         path(Segment) { name =>
           concat(
             get {
@@ -68,7 +57,6 @@ class ImdbRoutes(imdbRegistry: ActorRef[ImdbRegistry.Command])(implicit val syst
               //#retrieve-title-info
             })
         })
-      //#titles-get-delete
     }
   //#all-routes
 }

@@ -18,11 +18,8 @@ object  ImdbRegistry {
 
   sealed trait Command
   final case class GetTitles(replyTo: ActorRef[Either[ErrorDescription, Titles]]) extends Command
-  final case class CreateTitle(title: Title, replyTo: ActorRef[ActionPerformed]) extends Command
   final case class GetTitle(name: String, replyTo: ActorRef[GetTitleResponse]) extends Command
-
   final case class GetTitleResponse(maybeTitle: Option[Title])
-  final case class ActionPerformed(description: String)
 
   val queryDatabase = new QueryDatabase
   
@@ -37,9 +34,9 @@ object  ImdbRegistry {
     val titlesQuery = queryDatabase.getTitle()
     
     titlesQuery.onComplete  {
-      case Success(title) => {
-        println(title)
-        replyTo ! Right(Titles(title.toSeq))
+      case Success(titles) => {
+        println(titles)
+        replyTo ! Right(Titles(titles.toSeq))
       } 
       case Failure(exception) => {
         println(s"nik mok, an exception occured ${exception}") 
@@ -49,16 +46,10 @@ object  ImdbRegistry {
   }
 
   private def registry(titles: Set[Title])(implicit executionContext: ExecutionContext): Behavior[Command] =
-
     Behaviors.receiveMessage {
       case GetTitles(replyTo) =>
         performQuery(replyTo)
         Behaviors.same
-      
-      case CreateTitle(title, replyTo) =>
-        replyTo ! ActionPerformed(s"Title ${title.primaryTitle} created.")
-        registry(titles + title)
-      
       case GetTitle(name, replyTo) =>
         replyTo ! GetTitleResponse(titles.find(_.primaryTitle == name))
         Behaviors.same

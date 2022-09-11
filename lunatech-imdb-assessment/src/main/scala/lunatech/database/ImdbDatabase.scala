@@ -7,6 +7,5 @@ object  ImdbDatabase {
 
     def createDatabase()  = {
         Database.forConfig("postgres")
-    }
-    
+    }   
 } 
