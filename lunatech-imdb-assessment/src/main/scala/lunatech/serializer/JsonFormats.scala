@@ -5,6 +5,7 @@ import spray.json.DefaultJsonProtocol
 
 import lunatech.actors.ImdbRegistry.ActionPerformed
 import lunatech.actors.ImdbRegistry._
+import lunatech.models.{Title, Titles}
 
 object JsonFormats  {
   // import the default encoders for primitive types (Int, String, Lists etc)

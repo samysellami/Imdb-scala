@@ -31,6 +31,7 @@ object Main {
   //#start-http-server
   def main(args: Array[String]): Unit = {
     //#server-bootstrapping
+
     val rootBehavior = Behaviors.setup[Nothing] { context =>
       val imdbRegistryActor = context.spawn(ImdbRegistry(), "ImdbRegistryActor")
       context.watch(imdbRegistryActor)

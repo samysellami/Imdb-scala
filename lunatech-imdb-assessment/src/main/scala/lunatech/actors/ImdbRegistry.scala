@@ -6,9 +6,18 @@ import akka.actor.typed.Behavior
 import akka.actor.typed.scaladsl.Behaviors
 import scala.collection.immutable
 
+import lunatech.models.{Title, Titles}
+import lunatech.database.QueryDatabase
+import scala.util.Success
+import scala.util.Failure
+import scala.concurrent.ExecutionContextExecutor
+import akka.http.scaladsl.model.headers.LinkParams
+
+import scala.concurrent.ExecutionContext
 
 object  ImdbRegistry {
   // actor protocol
+
   sealed trait Command
   final case class GetTitles(replyTo: ActorRef[Titles]) extends Command
   final case class CreateTitle(title: Title, replyTo: ActorRef[ActionPerformed]) extends Command
@@ -18,27 +27,42 @@ object  ImdbRegistry {
   final case class GetTitleResponse(maybeTitle: Option[Title])
   final case class ActionPerformed(description: String)
 
-  //#title-case-classes
-  final case class Title(name: String, titleType: String, genres: String)
-  final case class Titles(titles: immutable.Seq[Title])
-  //#title-case-classes
+  val queryDatabase = new QueryDatabase
+  
+  def apply(): Behavior[Command] = {
+    Behaviors.setup { context =>
+    implicit val executionContext: ExecutionContext = context.executionContext
+    registry(Set.empty)
+    }
+  }
 
-  def apply(): Behavior[Command] = registry(Set.empty)
+  private def registry(titles: Set[Title])(implicit executionContext: ExecutionContext): Behavior[Command] =
 
-  private def registry(titles: Set[Title]): Behavior[Command] =
     Behaviors.receiveMessage {
       case GetTitles(replyTo) =>
-        replyTo ! Titles(titles.toSeq)
+        val title_basics = queryDatabase.getTitle()
+        
+        title_basics.onComplete  {
+          case Success(title) => {
+            println(title)
+            replyTo ! Titles(title.toSeq)} 
+          case Failure(exception) => {
+            println(s"nik mok, an exception occured ${exception}") 
+            replyTo ! Titles(titles.toSeq)
+          }
+        }
+        
         Behaviors.same
       case CreateTitle(title, replyTo) =>
-        replyTo ! ActionPerformed(s"Title ${title.name} created.")
+        replyTo ! ActionPerformed(s"Title ${title.primaryTitle} created.")
         registry(titles + title)
       case GetTitle(name, replyTo) =>
-        replyTo ! GetTitleResponse(titles.find(_.name == name))
+        replyTo ! GetTitleResponse(titles.find(_.primaryTitle == name))
         Behaviors.same
+      
       case DeleteTitle(name, replyTo) =>
         replyTo ! ActionPerformed(s"Title $name deleted.")
-        registry(titles.filterNot(_.name == name))
+        registry(titles.filterNot(_.primaryTitle == name))
     }
 }
 //#title-registry-actor

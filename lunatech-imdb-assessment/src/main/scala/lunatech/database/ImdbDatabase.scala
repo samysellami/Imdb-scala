@@ -3,8 +3,11 @@ package lunatech.database
 import slick.jdbc.PostgresProfile
 import slick.jdbc.PostgresProfile.api._
 
-object ImdbDataset {
+object  ImdbDatabase {
 
-    val db = Database.forConfig("postgres")
+    def createDatabase()  = {
+        Database.forConfig("postgres")
+    }
     
 }
+ 

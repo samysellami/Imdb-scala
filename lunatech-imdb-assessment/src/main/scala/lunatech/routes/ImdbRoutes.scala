@@ -13,6 +13,7 @@ import akka.util.Timeout
 
 import lunatech.actors.ImdbRegistry
 import lunatech.actors.ImdbRegistry._
+import lunatech.models.{Title, Titles}
 
 //#import-json-formats
 //#title-routes-class
