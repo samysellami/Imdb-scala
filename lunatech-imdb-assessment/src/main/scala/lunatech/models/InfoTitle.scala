@@ -1,4 +1,4 @@
 package lunatech.models
 
 // final case class InfoTitle(titleType: String, primaryTitle: String, genres: String)
-final case class InfoTitle(title: Title, cast: List[CastCrew], crew: List[Crew])
+final case class InfoTitle(title: Title, cast: List[Principals], crew: List[Crew])

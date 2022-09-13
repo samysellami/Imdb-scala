@@ -13,7 +13,7 @@ import akka.util.Timeout
 
 import lunatech.actors.ImdbRegistry
 import lunatech.actors.ImdbRegistry._
-import lunatech.models.{InfoTitle, Infos, ErrorDescription, TopRatedMovies}
+import lunatech.models.{InfoTitle, Informations, ErrorDescription, TopRatedMovies}
 import lunatech.models.Title
 
 //#import-json-formats
@@ -28,17 +28,16 @@ class ImdbRoutes(imdbRegistry: ActorRef[ImdbRegistry.Command])(implicit val syst
   // If ask takes more time than this to complete the request is failed
   private implicit val timeout = Timeout.create(system.settings.config.getDuration("my-app.routes.ask-timeout"))
 
-  def getInfo(primaryTitle: String): Future[Either[ErrorDescription, Infos]] =
-    imdbRegistry.ask(GetInfo(primaryTitle, _))
+  def getInfo(primaryTitle: String): Future[Either[ErrorDescription, Informations]] =
+    imdbRegistry.ask(GetInfos(primaryTitle, _))
   def getMovies(genre: String): Future[Either[ErrorDescription, TopRatedMovies]] =
     imdbRegistry.ask(GetMovies(genre, _))
 
   //#all-routes
-  //#titles-get title-get
   val imdbRoutes: Route =
     pathPrefix("title") {
       concat(
-        //#titles-get
+        //#title-get-informations
         path(Segment) { primaryTitle =>
           get {
             rejectEmptyResponse {
@@ -46,12 +45,12 @@ class ImdbRoutes(imdbRegistry: ActorRef[ImdbRegistry.Command])(implicit val syst
             }
           }
         },
-        //#titles-get
+        //#title-get-informations
+        //#title-top-rated-movies
         pathPrefix("toprated"){
           path(Segment) { genre =>
             concat(
               get {
-                //#retrieve-title-info
                 rejectEmptyResponse {
                     complete(getMovies(genre))
                 }
@@ -59,6 +58,7 @@ class ImdbRoutes(imdbRegistry: ActorRef[ImdbRegistry.Command])(implicit val syst
             )
           }
         }
+        //#title-top-rated-movies
       )
     }
   //#all-routes
