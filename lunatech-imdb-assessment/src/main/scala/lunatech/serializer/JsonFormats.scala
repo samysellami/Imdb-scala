@@ -4,7 +4,8 @@ package lunatech.serializer
 import spray.json.DefaultJsonProtocol
 
 import lunatech.actors.ImdbRegistry._
-import lunatech.models.{InfoTitle, Infos, ErrorDescription, Title, Cast, Crew, Name}
+import lunatech.models.{InfoTitle, Infos, ErrorDescription, Title, CastCrew, Crew, Name, Rating, RatedMovie, TopRatedMovies}
+import lunatech.models.RatedMovie
 
 
 object JsonFormats  {
@@ -13,10 +14,14 @@ object JsonFormats  {
 
   implicit val titleJsonFormat = jsonFormat7(Title)
   implicit val nameJsonFormat = jsonFormat5(Name)
-  implicit val castJsonFormat = jsonFormat4(Cast)
+  implicit val castJsonFormat = jsonFormat4(CastCrew)
   implicit val crewJsonFormat = jsonFormat2(Crew)
-  implicit val infoTitleJsonFormat = jsonFormat2(InfoTitle)
+  implicit val infoTitleJsonFormat = jsonFormat3(InfoTitle)
   implicit val infosTitleJsonFormat = jsonFormat1(Infos)
+
+  implicit val ratingTitleJsonFormat = jsonFormat2(Rating)
+  implicit val ratedMovieTitleJsonFormat = jsonFormat2(RatedMovie)
+  implicit val topRatedMoviesTitleJsonFormat = jsonFormat1(TopRatedMovies)
   implicit val errorJsonFormat = jsonFormat1(ErrorDescription)
 
 }

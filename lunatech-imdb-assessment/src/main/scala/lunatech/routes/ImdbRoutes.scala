@@ -13,7 +13,8 @@ import akka.util.Timeout
 
 import lunatech.actors.ImdbRegistry
 import lunatech.actors.ImdbRegistry._
-import lunatech.models.{InfoTitle, Infos, ErrorDescription}
+import lunatech.models.{InfoTitle, Infos, ErrorDescription, TopRatedMovies}
+import lunatech.models.Title
 
 //#import-json-formats
 //#title-routes-class
@@ -29,7 +30,7 @@ class ImdbRoutes(imdbRegistry: ActorRef[ImdbRegistry.Command])(implicit val syst
 
   def getInfo(primaryTitle: String): Future[Either[ErrorDescription, Infos]] =
     imdbRegistry.ask(GetInfo(primaryTitle, _))
-  def getMovies(genre: String): Future[Either[ErrorDescription, Infos]] =
+  def getMovies(genre: String): Future[Either[ErrorDescription, TopRatedMovies]] =
     imdbRegistry.ask(GetMovies(genre, _))
 
   //#all-routes
