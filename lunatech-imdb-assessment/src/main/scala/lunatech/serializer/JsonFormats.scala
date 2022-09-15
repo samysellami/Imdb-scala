@@ -3,7 +3,7 @@ package lunatech.serializer
 //#json-formats
 import spray.json.DefaultJsonProtocol
 
-import lunatech.actors.ImdbRegistry._
+import lunatech.actors.ImdbRegistryActor._
 import lunatech.models.{InfoTitle, Informations, ErrorDescription, Title, Principals, Crew, Name, Rating, RatedMovie, TopRatedMovies}
 import lunatech.models.RatedMovie
 

@@ -8,7 +8,7 @@ import akka.http.scaladsl.server.Route
 import scala.util.Failure
 import scala.util.Success
 
-import lunatech.actors.ImdbRegistry
+import lunatech.actors.ImdbRegistryActor
 import lunatech.routes.ImdbRoutes
 
 //#main-class
@@ -33,7 +33,7 @@ object Main {
     //#server-bootstrapping
 
     val rootBehavior = Behaviors.setup[Nothing] { context =>
-      val imdbRegistryActor = context.spawn(ImdbRegistry(), "ImdbRegistryActor")
+      val imdbRegistryActor = context.spawn(ImdbRegistryActor(), "ImdbRegistryActor")
       context.watch(imdbRegistryActor)
 
       val routes = new ImdbRoutes(imdbRegistryActor)(context.system)

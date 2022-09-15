@@ -5,20 +5,19 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Route
 
 import scala.concurrent.Future
-
 import akka.actor.typed.ActorRef
 import akka.actor.typed.ActorSystem
 import akka.actor.typed.scaladsl.AskPattern._
 import akka.util.Timeout
 
-import lunatech.actors.ImdbRegistry
-import lunatech.actors.ImdbRegistry._
+import lunatech.actors.ImdbRegistryActor
+import lunatech.actors.ImdbRegistryActor._
 import lunatech.models.{InfoTitle, Informations, ErrorDescription, TopRatedMovies}
 import lunatech.models.Title
 
 //#import-json-formats
 //#title-routes-class
-class ImdbRoutes(imdbRegistry: ActorRef[ImdbRegistry.Command])(implicit val system: ActorSystem[_]) {
+class ImdbRoutes(imdbRegistry: ActorRef[ImdbRegistryActor.Command])(implicit val system: ActorSystem[_]) {
 
   //#title-routes-class
   import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
@@ -32,6 +31,9 @@ class ImdbRoutes(imdbRegistry: ActorRef[ImdbRegistry.Command])(implicit val syst
     imdbRegistry.ask(GetInfos(primaryTitle, _))
   def getMovies(genre: String): Future[Either[ErrorDescription, TopRatedMovies]] =
     imdbRegistry.ask(GetMovies(genre, _))
+  def getSeparation(actor: String): Future[Either[ErrorDescription, String]] = 
+    imdbRegistry.ask(GetSeparation(actor, _))
+
 
   //#all-routes
   val imdbRoutes: Route =
@@ -57,8 +59,21 @@ class ImdbRoutes(imdbRegistry: ActorRef[ImdbRegistry.Command])(implicit val syst
               }
             )
           }
-        }
+        },
         //#title-top-rated-movies
+        //#title-six-degrees-separation
+        pathPrefix("sixdegrees"){
+          path(Segment) { actor =>
+            concat(
+              get {
+                rejectEmptyResponse {
+                    complete(getSeparation(actor))
+                }
+              }
+            )
+          }
+        }
+        //#title-six-degrees-separation
       )
     }
   //#all-routes
