@@ -8,6 +8,7 @@ import scala.concurrent.ExecutionContext
 import scala.util.{Success, Failure}
 import scala.concurrent._
 import scala.concurrent.duration._
+import scala.collection.mutable.ListBuffer
 
 import lunatech.database.DatabaseCommands
 import lunatech.models.{InfoTitle, Principals, Crew, Title, Name, Rating, RatedMovie, Actor}
@@ -89,6 +90,27 @@ class QueryDatabase(implicit executionContext: ExecutionContext) {
     databaseCommands.run[Vector[RatedMovie]](sqlQuery)
   }
 
+
+  def getNconstKevinBacon(): Seq[String] = {
+    val sqlQuery = 
+      sql"""SELECT nconst 
+              FROM public.name_basics n
+            WHERE primaryName='Kevin Bacon'
+            AND birthYear='1958'"""
+    val nconst = databaseCommands.runQuery(sqlQuery)
+    Await.result(nconst, 5.seconds)
+  }
+
+  def getNconstActor(actorName: String): Seq[String] = {
+    val sqlQuery = 
+      sql"""SELECT nconst 
+                FROM public.name_basics n
+                WHERE primaryName=${actorName}
+                LIMIT 1"""
+    val nconst = databaseCommands.runQuery(sqlQuery)
+    Await.result(nconst, 5.seconds)
+  }
+
   def getCastNames(movie: String): Seq[String] = {
     val sqlQuery = 
       sql"""SELECT COALESCE(nconst,'')
@@ -97,36 +119,51 @@ class QueryDatabase(implicit executionContext: ExecutionContext) {
                   ON t.tconst = p.tconst
               WHERE t.tconst=${movie};"""
     val cast = databaseCommands.runQuery(sqlQuery)
-    Await.result(cast, 2.seconds)
+    Await.result(cast, 5.seconds)
   }
 
-  def sixDegreeQuery(actorName: String) = {
-
+  def getTitlesActor(actorName: String, nconstActor: String): Seq[String] = {
     val sqlQuery = 
-      sql"""WITH 
-              nconstActor AS (
-                SELECT nconst 
-                FROM public.name_basics n
-                WHERE primaryName=${actorName}
-              )
-            SELECT t.tconst 
+      sql"""SELECT t.tconst 
               FROM public.title_basics t
                 INNER JOIN public.title_principals p
                   ON t.tconst = p.tconst
-            WHERE nconst=(SELECT * FROM nconstActor);"""
-    val moviesActor = databaseCommands.runQuery(sqlQuery)
-    
+            WHERE nconst=${nconstActor};"""
+    val titles = databaseCommands.runQuery(sqlQuery)
+    Await.result(titles, 5.seconds)
+  }
+
+  def getCastActor(titlesActor: Seq[String]): Seq[String] = {
     var castActor: Seq[String] = Seq.empty[String]
-    moviesActor.map(
-      movies => {
-        movies.map( 
-          movie => {
-            val cast = getCastNames(movie)  
-            castActor = castActor ++ cast.toSeq
+    // var castActor = new ListBuffer[String]()
+    val cast = titlesActor.map(
+          title => {
+            val cast = getCastNames(title)  
+            castActor = castActor ++ cast
           }
         )
-        castActor.distinct
-      }
-    )
+    castActor.toSeq.distinct
+    // Await.ready(cast, Duration.Inf)
+  }
+  
+  def createCastActor(completeCastActor: Seq[String]): Seq[Actor] = {
+    val cast: Seq[Actor] = completeCastActor.map (
+          castName => 
+            Actor(castName, List())
+        )
+    // Await.ready(cast, Duration.Inf)
+    cast
+  }
+
+  def sixDegreeQuery(actorName: String): Future[String] = {
+    val nconstKevinBacon = getNconstKevinBacon().headOption.getOrElse("")
+    val nconstActor = getNconstActor(actorName).headOption.getOrElse("")
+    val titlesActor = getTitlesActor(actorName, nconstActor)
+    val castActor = getCastActor(titlesActor)
+    val actors = createCastActor(castActor)
+    println(actors)
+
+
+    Future.successful("6")
   }
 }

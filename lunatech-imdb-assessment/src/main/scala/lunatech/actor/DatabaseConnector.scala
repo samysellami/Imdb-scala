@@ -42,8 +42,7 @@ class DatabaseConnector(implicit executionContext: ExecutionContext) {
     val queryResult = queryDatabase.sixDegreeQuery(actor)
     queryResult.onComplete  {
       case Success(separation) => {
-        println("cast names:", separation)
-        replyTo ! Right(separation.headOption.getOrElse(""))
+        replyTo ! Right(separation)
       } 
       case Failure(exception) => {
         println(s"An exception occured: ${exception}") 

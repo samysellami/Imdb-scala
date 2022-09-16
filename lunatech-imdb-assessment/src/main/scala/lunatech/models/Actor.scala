@@ -1,3 +1,3 @@
 package lunatech.models
 
-final case class Actor(actor: String, visited: Int = 0, castActors: List[Actor]= List())
+final case class Actor(nconstActor: String, castActors: List[Actor]= List(), visited: Int = 0)
