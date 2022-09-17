@@ -122,7 +122,7 @@ class QueryDatabase(implicit executionContext: ExecutionContext) {
     Await.result(cast, 5.seconds)
   }
 
-  def getTitlesActor(actorName: String, nconstActor: String): Seq[String] = {
+  def getTitlesActor(nconstActor: String): Seq[String] = {
     val sqlQuery = 
       sql"""SELECT t.tconst 
               FROM public.title_basics t
@@ -137,32 +137,45 @@ class QueryDatabase(implicit executionContext: ExecutionContext) {
     var castActor: Seq[String] = Seq.empty[String]
     // var castActor = new ListBuffer[String]()
     val cast = titlesActor.map(
-          title => {
-            val cast = getCastNames(title)  
-            castActor = castActor ++ cast
-          }
-        )
+      title => {
+        val cast = getCastNames(title)  
+        castActor = castActor ++ cast
+      }
+    )
     castActor.toSeq.distinct
     // Await.ready(cast, Duration.Inf)
   }
   
-  def createCastActor(completeCastActor: Seq[String]): Seq[Actor] = {
-    val cast: Seq[Actor] = completeCastActor.map (
-          castName => 
-            Actor(castName, List())
-        )
-    // Await.ready(cast, Duration.Inf)
+  def createCastActor(castActor: Seq[String]): List[Actor] = {
+    val cast: List[Actor] = castActor.map (
+      castName => 
+        Actor(castName)
+    ).toList
     cast
+  }
+
+  def buildGraph(actor: Actor, nconstKevinBacon: String, i: Int): Actor = {
+    if (i<5 && actor.nconst != nconstKevinBacon && actor.nconst != null){
+      val titlesActor = getTitlesActor(actor.nconst)
+      val castActor = getCastActor(titlesActor)
+      val actors: List[Actor] = createCastActor(castActor)
+      
+      val actorsCast = actors.map(
+        actor => buildGraph(actor, nconstKevinBacon, i+1)
+      )
+      actor.copy(castActors = actorsCast)
+    } else {
+      actor
+    }
   }
 
   def sixDegreeQuery(actorName: String): Future[String] = {
     val nconstKevinBacon = getNconstKevinBacon().headOption.getOrElse("")
     val nconstActor = getNconstActor(actorName).headOption.getOrElse("")
-    val titlesActor = getTitlesActor(actorName, nconstActor)
-    val castActor = getCastActor(titlesActor)
-    val actors = createCastActor(castActor)
-    println(actors)
-
+    val actor = Actor(nconstActor)
+    val i = 1
+    val graph = buildGraph(actor, nconstKevinBacon, i)
+    println(graph)
 
     Future.successful("6")
   }
