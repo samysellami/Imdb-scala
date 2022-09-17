@@ -6,11 +6,12 @@ import scala.util.{Success, Failure}
 
 import lunatech.database.QueryDatabase
 import lunatech.models.{InfoTitle, Informations, ErrorDescription, TopRatedMovies, Principals, Crew}
+import lunatech.sixdegree.SixDegreeSeparation
 
 class DatabaseConnector(implicit executionContext: ExecutionContext) {
 
   val queryDatabase = new QueryDatabase
-
+  val sixDegreeSepation = new SixDegreeSeparation
   def performInfosQuery(primaryTitle: String, replyTo: ActorRef[Either[ErrorDescription, Informations]]) = {
     val queryResult = queryDatabase.getInfoQuery(primaryTitle)
     queryResult.onComplete  {
@@ -39,7 +40,7 @@ class DatabaseConnector(implicit executionContext: ExecutionContext) {
   }
 
   def performSeparationQuery(actor: String, replyTo: ActorRef[Either[ErrorDescription, String]]) = {
-    val queryResult = queryDatabase.sixDegreeQuery(actor)
+    val queryResult = sixDegreeSepation.sixDegree(actor)
     queryResult.onComplete  {
       case Success(separation) => {
         replyTo ! Right(separation)
