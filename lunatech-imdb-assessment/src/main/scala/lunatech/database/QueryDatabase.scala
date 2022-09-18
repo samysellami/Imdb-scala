@@ -81,7 +81,6 @@ class QueryDatabase(implicit executionContext: ExecutionContext) {
     databaseCommands.run[Vector[RatedMovie]](sqlQuery)
   }
 
-
   def getNconstKevinBacon(): Seq[String] = {
     val sqlQuery = 
       sql"""SELECT nconst 
@@ -100,6 +99,17 @@ class QueryDatabase(implicit executionContext: ExecutionContext) {
                 LIMIT 1"""
     val nconst = databaseCommands.runQuery(sqlQuery)
     Await.result(nconst, 5.seconds)
+  }
+
+
+  def getNameActor(nconst: String): Seq[String] = {
+    val sqlQuery = 
+      sql"""SELECT primaryName 
+                FROM public.name_basics n
+                WHERE nconst=${nconst}
+                LIMIT 1"""
+    val name = databaseCommands.runQuery(sqlQuery)
+    Await.result(name, 5.seconds)
   }
 
   def getCastNames(movie: String): Seq[String] = {

@@ -21,7 +21,7 @@ class DatabaseConnector(implicit executionContext: ExecutionContext) {
       } 
       case Failure(exception) => {
         println(s"An exception occured: ${exception}") 
-        replyTo ! Left(ErrorDescription(s"an error occured ${exception}"))
+        replyTo ! Left(ErrorDescription(s"an error occured : ${exception}"))
       }
     }        
   }
@@ -34,7 +34,7 @@ class DatabaseConnector(implicit executionContext: ExecutionContext) {
       } 
       case Failure(exception) => {
         println(s"An exception occured: ${exception}") 
-        replyTo ! Left(ErrorDescription(s"an error occured ${exception}"))
+        replyTo ! Left(ErrorDescription(s"an error occured : ${exception}"))
       }
     }        
   }
@@ -45,8 +45,8 @@ class DatabaseConnector(implicit executionContext: ExecutionContext) {
       case Right(degree) => 
         replyTo ! Right(s"The degree of separation is : ${degree}")
       case Left(exception) =>
-        println(s"An exception occured: ${exception}") 
-        replyTo ! Left(ErrorDescription(s"an error occured ${exception}"))
+        println(s"An exception occured: ${exception.description}") 
+        replyTo ! Left(ErrorDescription(s"an error occured : ${exception.description}"))
     }       
   }
 
