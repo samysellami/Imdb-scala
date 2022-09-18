@@ -66,7 +66,7 @@ class SixDegreeSeparation(implicit executionContext: ExecutionContext) {
     }
   }
 
-  def shortestPath(nconstActor: String, nconstKevinBacon: String): Actor = {
+  def shortestPath(nconstActor: String, nconstKevinBacon: String): Either[ErrorDescription, Actor] = {
     var endActor = Actor("")
     var BFS = Queue[Actor]()
     val startActor = Actor(nconstActor, visited = true) 
@@ -89,10 +89,15 @@ class SixDegreeSeparation(implicit executionContext: ExecutionContext) {
         )
       }}
     }
-    endActor
+    if (endActor.prevActor.isDefined){
+      Right(endActor)
+    } else {
+      Left(ErrorDescription("no path found!!"))
+    }
+
   }
 
-  def sixDegree(actorName: String): Future[String] = {
+  def sixDegree(actorName: String): Either[ErrorDescription, String] = {
     val nconstKevinBacon = queryDatabase.getNconstKevinBacon().headOption.getOrElse("")
     val nconstActor = queryDatabase.getNconstActor(actorName).headOption.getOrElse("")
     println(s"${actorName}= ${nconstActor}")
@@ -100,11 +105,17 @@ class SixDegreeSeparation(implicit executionContext: ExecutionContext) {
     // val graph = buildGraph(startActor, nconstKevinBacon)
 
     val result = shortestPath(nconstActor, nconstKevinBacon)
-    val route = createRoute(List(result), Some(result))
-    println("***shortest path:  ****")
-    route.foreach(actor => println(actor.nconst))
-    
-    Future.successful("6")
+    result match {
+      case Right(value) =>  {
+        val route = createRoute(List(value), Some(value)).reverse
+        println("***shortest path:  ****")
+        route.foreach(actor => println(actor.nconst))
+        Right(s"${route.length -1}")
+      }
+      case Left(value) => {
+        Left(value)
+      }
+    }    
   }
 
 }

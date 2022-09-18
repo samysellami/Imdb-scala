@@ -41,15 +41,13 @@ class DatabaseConnector(implicit executionContext: ExecutionContext) {
 
   def performSeparationQuery(actor: String, replyTo: ActorRef[Either[ErrorDescription, String]]) = {
     val queryResult = sixDegreeSepation.sixDegree(actor)
-    queryResult.onComplete  {
-      case Success(separation) => {
-        replyTo ! Right(separation)
-      } 
-      case Failure(exception) => {
+    queryResult match {
+      case Right(degree) => 
+        replyTo ! Right(s"The degree of separation is : ${degree}")
+      case Left(exception) =>
         println(s"An exception occured: ${exception}") 
         replyTo ! Left(ErrorDescription(s"an error occured ${exception}"))
-      }
-    }        
+    }       
   }
 
 }
