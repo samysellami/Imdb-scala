@@ -10,7 +10,7 @@ import scala.util.control.Breaks._
 import lunatech.models.ErrorDescription
 
 /**
- * A class that performs the six degrees of separation between a person and Kevin Bacon 
+ * A class that computes the degrees of separation between a person and Kevin Bacon 
  * 
  */
 class SixDegreeSeparation(implicit executionContext: ExecutionContext) {
@@ -69,6 +69,13 @@ class SixDegreeSeparation(implicit executionContext: ExecutionContext) {
     }
   }
 
+  /** 
+  *  Returns the shortest path between the actor argument and Kevin Bacon
+  *  the method uses the Breath First Search algorithm
+  * 
+  *  @param actorName   the person's name
+  *  @return either the degree of separation or and error message indicating that no path was found
+  */
   def shortestPath(nconstActor: String, nconstKevinBacon: String): Either[String, Actor] = {
     var endActor = Actor("")
     var BFS = Queue[Actor]()
@@ -102,13 +109,17 @@ class SixDegreeSeparation(implicit executionContext: ExecutionContext) {
     }
   }
 
+  /** 
+  *  Returns the degree of separation between the actor argument and Kevin Bacon
+  *
+  *  @param actorName   the person's name
+  *  @return either the degree of separation or and error message indicating that no path was found
+  */
   def sixDegree(actorName: String): Either[ErrorDescription, String] = {
     val nconstKevinBacon = queryDatabase.getNconstKevinBaconQuery().headOption.getOrElse("")
     val nconstActor = queryDatabase.getNconstActorQuery(actorName).headOption.getOrElse("")
-    println(s"${actorName}= ${nconstActor}")
-    println(s"kevin bacon = ${nconstKevinBacon}")
-
     val result = shortestPath(nconstActor, nconstKevinBacon)
+    
     result match {
       case Right(value) =>  {
         val route = createRoute(List(value), Some(value)).reverse

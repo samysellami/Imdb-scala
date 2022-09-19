@@ -98,20 +98,19 @@ class QueryDatabase(implicit executionContext: ExecutionContext) {
   def getNconstActorQuery(actorName: String): Seq[String] = {
     val sqlQuery = 
       sql"""SELECT nconst 
-                FROM public.name_basics n
-                WHERE primaryName=${actorName}
-                LIMIT 1"""
+            FROM public.name_basics n
+            WHERE primaryName=${actorName}
+            LIMIT 1"""
     val nconst = databaseCommands.runQuery(sqlQuery)
     Await.result(nconst, 5.seconds)
   }
 
-
   def getNameActorQuery(nconst: String): Seq[String] = {
     val sqlQuery = 
       sql"""SELECT primaryName 
-                FROM public.name_basics n
-                WHERE nconst=${nconst}
-                LIMIT 1"""
+            FROM public.name_basics n
+            WHERE nconst=${nconst}
+            LIMIT 1"""
     val name = databaseCommands.runQuery(sqlQuery)
     Await.result(name, 5.seconds)
   }
@@ -119,10 +118,10 @@ class QueryDatabase(implicit executionContext: ExecutionContext) {
   def getCastNamesQuery(movie: String): Seq[String] = {
     val sqlQuery = 
       sql"""SELECT COALESCE(nconst,'')
-              FROM public.title_basics t
-                INNER JOIN public.title_principals p
-                  ON t.tconst = p.tconst
-              WHERE t.tconst=${movie};"""
+            FROM public.title_basics t
+              INNER JOIN public.title_principals p
+                ON t.tconst = p.tconst
+            WHERE t.tconst=${movie};"""
     val cast = databaseCommands.runQuery(sqlQuery)
     Await.result(cast, 5.seconds)
   }
@@ -130,9 +129,9 @@ class QueryDatabase(implicit executionContext: ExecutionContext) {
   def getTitlesActorQuery(nconstActor: String): Seq[String] = {
     val sqlQuery = 
       sql"""SELECT t.tconst 
-              FROM public.title_basics t
-                INNER JOIN public.title_principals p
-                  ON t.tconst = p.tconst
+            FROM public.title_basics t
+              INNER JOIN public.title_principals p
+                ON t.tconst = p.tconst
             WHERE nconst=${nconstActor};"""
     val titles = databaseCommands.runQuery(sqlQuery)
     Await.result(titles, 5.seconds)

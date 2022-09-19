@@ -111,3 +111,4 @@ reflecing the connections between the persons:
 ```txt
 The degree of separation is : 2 (Al Pacino -> James Caan -> Kevin Bacon)
 ```
+**Note**: this feature works better on the minimal dataset

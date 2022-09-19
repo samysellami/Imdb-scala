@@ -5,7 +5,10 @@ import slick.jdbc.{JdbcBackend, SQLActionBuilder}
 
 import scala.concurrent.Future
 
-
+/**
+ * A class that defines the different ways to query the database 
+ * 
+ */
 class DatabaseCommands {
   lazy val db = ImdbDatabase.createDatabase()
 
