@@ -3,18 +3,18 @@
 ## Details:
 This project is based on the popular website [IMDb](https://www.imdb.com/)
 which offers movie and TV show information. Its consist of a a web application 
-that can present the user with different informations depending on the entered endopoint
+that can present the user with different informations depending on the entered endpoint
 
 ## Requirement:
 * sbt
 * Docker
 
 ### Setup:
-Run a [PostgreSQL](https://www.postgresql.org/) instance with all the data loaded,
+Run a [PostgreSQL](https://www.postgresql.org/) instance with all the data loaded
 ```
 docker-compose up
 ```
-Launch the application with the following command
+Launch the application with the following commands
 ```
 cd lunatech-imdb-assessment/
 sbt ~reStart
@@ -78,7 +78,7 @@ In your favorite browser, go the following URL
 http://localhost:8080/title/toprated/<genre>        where <genre> is the genre of the movies, for example:
 http://localhost:8080/title/torated/Comedy
 ```
-You will be be presented with a json output containing the top 10 a list of top rated movies of the genre entered
+You will be be presented with a json output containing the list of the top 10 rated movies of the genre entered
 (again, it is better to use a json formatter), the output consist of the movies's primary title as well as the 
 corresponding rating:
 ```json
@@ -98,8 +98,8 @@ corresponding rating:
 ### Feature #3:
 
 [Six degrees of KevinBacon](https://en.wikipedia.org/wiki/Six_Degrees_of_Kevin_Bacon): 
-An endpoint that provide what’s the degree of separation between a person
-(e.g. actor or actress) the user entered and Kevin Bacon. 
+An endpoint that provide what’s the degree of separation between the person
+(e.g. actor or actress) the user has entered and Kevin Bacon. 
 
 In your favorite browser, go the following URL
 ```
