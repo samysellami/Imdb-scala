@@ -9,6 +9,10 @@ import scala.concurrent.ExecutionContext
 
 import lunatech.models.{InfoTitle, Informations, ErrorDescription, TopRatedMovies, Principals, Crew}
 
+/**
+ * An actor that that is responsible for receiving the fetch database requests, 
+ * and replying with the appopriate messages
+ */
 object  ImdbRegistryActor {
 
   sealed trait Command

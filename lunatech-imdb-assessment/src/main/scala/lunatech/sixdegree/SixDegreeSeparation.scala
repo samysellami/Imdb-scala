@@ -9,6 +9,10 @@ import scala.collection.mutable.Queue
 import scala.util.control.Breaks._
 import lunatech.models.ErrorDescription
 
+/**
+ * A class that performs the six degrees of separation between a person and Kevin Bacon 
+ * 
+ */
 class SixDegreeSeparation(implicit executionContext: ExecutionContext) {
   
   val queryDatabase = new QueryDatabase
@@ -17,12 +21,11 @@ class SixDegreeSeparation(implicit executionContext: ExecutionContext) {
     var castActor: Seq[String] = Seq.empty[String]
     val cast = titlesActor.map(
       title => {
-        val cast = queryDatabase.getCastNames(title)  
+        val cast = queryDatabase.getCastNamesQuery(title)  
         castActor = castActor ++ cast
       }
     )
     castActor.toSeq.distinct
-    // Await.ready(cast, Duration.Inf)
   }
   
   def createCastActor(castActor: Seq[String]): List[Actor] = {
@@ -35,7 +38,7 @@ class SixDegreeSeparation(implicit executionContext: ExecutionContext) {
 
   def buildGraph(actor: Actor, nconstKevinBacon: String): Actor = {
     if (actor.nconst != nconstKevinBacon && actor.nconst != null){
-      val titlesActor = queryDatabase.getTitlesActor(actor.nconst)
+      val titlesActor = queryDatabase.getTitlesActorQuery(actor.nconst)
       val castActor = getCastActor(titlesActor)
       val actors: List[Actor] = createCastActor(castActor)
       val actorsCast = actors.map(
@@ -48,7 +51,7 @@ class SixDegreeSeparation(implicit executionContext: ExecutionContext) {
   }
 
   def addCast(actor: Actor) = {
-    val titlesActor = queryDatabase.getTitlesActor(actor.nconst)
+    val titlesActor = queryDatabase.getTitlesActorQuery(actor.nconst)
     val castActor = getCastActor(titlesActor)
     val actors: List[Actor] = createCastActor(castActor)
     actor.copy(castActors = actors)
@@ -93,29 +96,25 @@ class SixDegreeSeparation(implicit executionContext: ExecutionContext) {
       Right(endActor)
     } else {
       if (nconstActor==nconstKevinBacon)
-        Left("Kevin Bacon has no degree of separation on himself!!")
+        Left("Kevin Bacon has no degree of separation with himself!!")
       else
         Left("no path found!!")
     }
-
   }
 
   def sixDegree(actorName: String): Either[ErrorDescription, String] = {
-    val nconstKevinBacon = queryDatabase.getNconstKevinBacon().headOption.getOrElse("")
-    val nconstActor = queryDatabase.getNconstActor(actorName).headOption.getOrElse("")
+    val nconstKevinBacon = queryDatabase.getNconstKevinBaconQuery().headOption.getOrElse("")
+    val nconstActor = queryDatabase.getNconstActorQuery(actorName).headOption.getOrElse("")
     println(s"${actorName}= ${nconstActor}")
     println(s"kevin bacon = ${nconstKevinBacon}")
-    // val graph = buildGraph(startActor, nconstKevinBacon)
 
     val result = shortestPath(nconstActor, nconstKevinBacon)
     result match {
       case Right(value) =>  {
         val route = createRoute(List(value), Some(value)).reverse
-        println("***shortest path:  ****")
-        route.foreach(actor => println(actor.nconst))
         val routeNames = route.map(
           actor => {
-            queryDatabase.getNameActor(actor.nconst).headOption.getOrElse("")
+            queryDatabase.getNameActorQuery(actor.nconst).headOption.getOrElse("")
           }
         )
         val sixDegree = routeNames.foldLeft(routeNames(0))(

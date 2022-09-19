@@ -8,10 +8,15 @@ import lunatech.database.QueryDatabase
 import lunatech.models.{InfoTitle, Informations, ErrorDescription, TopRatedMovies, Principals, Crew}
 import lunatech.sixdegree.SixDegreeSeparation
 
+/**
+ * A class to connect to the database to perform different queries 
+ * 
+ */
 class DatabaseConnector(implicit executionContext: ExecutionContext) {
 
   val queryDatabase = new QueryDatabase
   val sixDegreeSepation = new SixDegreeSeparation
+
   def performInfosQuery(primaryTitle: String, replyTo: ActorRef[Either[ErrorDescription, Informations]]) = {
     val queryResult = queryDatabase.getInfoQuery(primaryTitle)
     queryResult.onComplete  {
@@ -45,8 +50,8 @@ class DatabaseConnector(implicit executionContext: ExecutionContext) {
       case Right(degree) => 
         replyTo ! Right(s"The degree of separation is : ${degree}")
       case Left(exception) =>
-        println(s"An exception occured: ${exception.description}") 
-        replyTo ! Left(ErrorDescription(s"an error occured : ${exception.description}"))
+        println(s"An exception occured: ${exception.message}") 
+        replyTo ! Left(ErrorDescription(s"an error occured : ${exception.message}"))
     }       
   }
 

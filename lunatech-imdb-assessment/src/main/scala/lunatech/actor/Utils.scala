@@ -3,6 +3,11 @@ package lunatech.actors
 import lunatech.models.Title
 import lunatech.models.{InfoTitle, Principals, Crew}
 
+/**
+ * A Utility object to aggregate title informations, 
+ * querying the database returns rows that might have the same title, 
+ * this object allow us to group those duplicates 
+ */
 object Utils {
 
   def aggregateData(infos: Seq[InfoTitle]): Seq[InfoTitle] = {

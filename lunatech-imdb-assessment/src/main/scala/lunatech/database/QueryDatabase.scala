@@ -13,6 +13,10 @@ import scala.collection.mutable.ListBuffer
 import lunatech.database.DatabaseCommands
 import lunatech.models.{InfoTitle, Principals, Crew, Title, Name, Rating, RatedMovie, Actor}
 
+/**
+ * A class that performs different queries to the database 
+ * 
+ */
 class QueryDatabase(implicit executionContext: ExecutionContext) {
 
   val databaseCommands = new DatabaseCommands
@@ -81,7 +85,7 @@ class QueryDatabase(implicit executionContext: ExecutionContext) {
     databaseCommands.run[Vector[RatedMovie]](sqlQuery)
   }
 
-  def getNconstKevinBacon(): Seq[String] = {
+  def getNconstKevinBaconQuery(): Seq[String] = {
     val sqlQuery = 
       sql"""SELECT nconst 
               FROM public.name_basics n
@@ -91,7 +95,7 @@ class QueryDatabase(implicit executionContext: ExecutionContext) {
     Await.result(nconst, 5.seconds)
   }
 
-  def getNconstActor(actorName: String): Seq[String] = {
+  def getNconstActorQuery(actorName: String): Seq[String] = {
     val sqlQuery = 
       sql"""SELECT nconst 
                 FROM public.name_basics n
@@ -102,7 +106,7 @@ class QueryDatabase(implicit executionContext: ExecutionContext) {
   }
 
 
-  def getNameActor(nconst: String): Seq[String] = {
+  def getNameActorQuery(nconst: String): Seq[String] = {
     val sqlQuery = 
       sql"""SELECT primaryName 
                 FROM public.name_basics n
@@ -112,7 +116,7 @@ class QueryDatabase(implicit executionContext: ExecutionContext) {
     Await.result(name, 5.seconds)
   }
 
-  def getCastNames(movie: String): Seq[String] = {
+  def getCastNamesQuery(movie: String): Seq[String] = {
     val sqlQuery = 
       sql"""SELECT COALESCE(nconst,'')
               FROM public.title_basics t
@@ -123,7 +127,7 @@ class QueryDatabase(implicit executionContext: ExecutionContext) {
     Await.result(cast, 5.seconds)
   }
 
-  def getTitlesActor(nconstActor: String): Seq[String] = {
+  def getTitlesActorQuery(nconstActor: String): Seq[String] = {
     val sqlQuery = 
       sql"""SELECT t.tconst 
               FROM public.title_basics t
@@ -133,5 +137,4 @@ class QueryDatabase(implicit executionContext: ExecutionContext) {
     val titles = databaseCommands.runQuery(sqlQuery)
     Await.result(titles, 5.seconds)
   }
-
 }

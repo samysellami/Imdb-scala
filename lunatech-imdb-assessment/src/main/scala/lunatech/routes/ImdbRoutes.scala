@@ -15,19 +15,20 @@ import lunatech.actors.ImdbRegistryActor._
 import lunatech.models.{InfoTitle, Informations, ErrorDescription, TopRatedMovies}
 import lunatech.models.Title
 
-//#import-json-formats
-//#title-routes-class
-class ImdbRoutes(imdbRegistry: ActorRef[ImdbRegistryActor.Command])(implicit val system: ActorSystem[_]) {
+/**
+ * A class that contains all the http routes that the application hadndles 
+ *
+ */
+ class ImdbRoutes(imdbRegistry: ActorRef[ImdbRegistryActor.Command])(implicit val system: ActorSystem[_]) {
 
-  //#title-routes-class
   import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
-  import lunatech.serializer.JsonFormats._
   //#import-json-formats
+  import lunatech.serializer.JsonFormats._
 
   // If ask takes more time than this to complete the request is failed
   private implicit val timeout = Timeout.create(system.settings.config.getDuration("my-app.routes.ask-timeout"))
 
-  def getInfo(primaryTitle: String): Future[Either[ErrorDescription, Informations]] =
+  def getInfos(primaryTitle: String): Future[Either[ErrorDescription, Informations]] =
     imdbRegistry.ask(GetInfos(primaryTitle, _))
   def getMovies(genre: String): Future[Either[ErrorDescription, TopRatedMovies]] =
     imdbRegistry.ask(GetMovies(genre, _))
@@ -43,7 +44,7 @@ class ImdbRoutes(imdbRegistry: ActorRef[ImdbRegistryActor.Command])(implicit val
         path(Segment) { primaryTitle =>
           get {
             rejectEmptyResponse {
-              complete(getInfo(primaryTitle))
+              complete(getInfos(primaryTitle))
             }
           }
         },

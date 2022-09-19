@@ -1,3 +1,3 @@
 package lunatech.models
 
-final case class ErrorDescription(description: String)
+final case class ErrorDescription(message: String)
