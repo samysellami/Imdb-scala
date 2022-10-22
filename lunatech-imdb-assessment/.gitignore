@@ -5,3 +5,16 @@ target/
 .bloop/
 .ammonite/
 metals.sbt
+/.idea
+/.idea_modules
+/.classpath
+/.project
+project/project/
+project/target/
+/.ivy2
+*.log
+/project/.bloop
+.bsp/
+.vscode/
+project/metals.sbt
+.scalafmt.conf
