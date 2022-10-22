@@ -1,8 +1,8 @@
-# Lunatech IMDb Assessment 
+# IMDb project 
 
 ## Details:
 This project is based on the popular website [IMDb](https://www.imdb.com/)
-which offers movie and TV show information. Its consist of a a web application 
+which offers movie and TV show information. Its consist of a a web application in *Scala* 
 that can present the user with different informations depending on the entered endpoint
 
 ## Requirement:
