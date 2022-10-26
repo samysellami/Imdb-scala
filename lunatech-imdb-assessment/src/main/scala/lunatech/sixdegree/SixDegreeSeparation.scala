@@ -113,7 +113,7 @@ class SixDegreeSeparation(implicit executionContext: ExecutionContext) {
   *  Returns the degree of separation between the actor argument and Kevin Bacon
   *
   *  @param actorName   the person's name
-  *  @return either the degree of separation or and error message indicating that no path was found
+  *  @return either the degree of separation or and error message
   */
   def sixDegree(actorName: String): Either[ErrorDescription, String] = {
     val nconstKevinBacon = queryDatabase.getNconstKevinBaconQuery().headOption.getOrElse("")
@@ -141,5 +141,4 @@ class SixDegreeSeparation(implicit executionContext: ExecutionContext) {
       }
     }    
   }
-
 }
